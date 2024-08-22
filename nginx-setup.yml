@@ -1,0 +1,23 @@
+---
+- hosts: localhost
+  tasks:
+    - name: Ensure Docker is installed
+      shell: |
+        if ! command -v docker &> /dev/null; then
+          brew install --cask docker;
+        fi
+
+    - name: Start Docker service
+      shell: |
+        if ! pgrep -x "Docker" > /dev/null; then
+          open /Applications/Docker.app;
+        fi
+      async: 30
+      poll: 0
+
+    - name: Wait for Docker to start
+      pause:
+        minutes: 1
+
+    - name: Run Docker Compose to start Nginx
+      shell: docker-compose up -d
